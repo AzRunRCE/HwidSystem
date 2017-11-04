@@ -14,14 +14,14 @@ Public Class HwidSystem
         Username = Username.ToLower()
         Password = getSHA1Hash(Password)
         Dim Hwid As String = GetID()
-        Answer1 = getSHA1Hash(Hwid & " Not Banned " & Username & " " & Password & " 0")
-        Dim GET_Data As String = URL & "/api.php?Action=Login&usr=" & Username & "&pas=" & Password & "&hwid=" & GetID()
+        Answer1 = getSHA1Hash(Hwid & "Not Banned" & Username & Password)
+        Dim GET_Data As String = URL & "/api.php?action=login&usr=" & Username & "&pas=" & Password & "&hwid=" & Hwid
         Try
             Dim WebReq As HttpWebRequest = HttpWebRequest.Create(GET_Data)
             WebReq.Proxy = Nothing
             Using WebRes As HttpWebResponse = WebReq.GetResponse
                 Using Reader As New StreamReader(WebRes.GetResponseStream)
-                    Dim Str As String = Reader.ReadLine
+                    Dim Str As String = Reader.ReadToEnd()
                     If (Str.Contains(Answer1)) Then
                         Return 1
                     Else
@@ -31,31 +31,20 @@ Public Class HwidSystem
             End Using
         Catch Ex As Exception
             MsgBox("Unable to contact server, Please try again later!", MsgBoxStyle.Exclamation, "Error")
-            Return "Invalid"
+            Return 0
         End Try
     End Function
-    Public Sub RegisterUser(ByVal Username As String, ByVal Password As String, ByVal Code As String)
+    Public Function RegisterUser(ByVal Username As String, ByVal Password As String, ByVal Code As String) As Integer
         Username = Username.ToLower()
-        Dim WebReq As HttpWebRequest = HttpWebRequest.Create(URL & "/api.php?Action=Register&code=" & Code & "&usr=" & Username & "&pas=" & getSHA1Hash(Password) & "&hwid=" & GetID())
+        Dim WebReq As HttpWebRequest = HttpWebRequest.Create(URL & "/api.php?action=register&code=" & Code & "&usr=" & Username & "&pas=" & getSHA1Hash(Password) & "&hwid=" & GetID())
         WebReq.Proxy = Nothing
         Using WebRes As WebResponse = WebReq.GetResponse
             Using Reader As New StreamReader(WebRes.GetResponseStream)
                 Dim Stream As String = Reader.ReadToEnd
             End Using
         End Using
-        Select Case CheckLogin(Username, Password)
-            Case 0
-                MsgBox("Your Account has been created!", MsgBoxStyle.Information, "Created!")
-                'TextBox1.Text = Username
-                'TextBox2.Text = Password
-            Case 1
-                MsgBox("You Have Been Banned", MsgBoxStyle.Critical, "Banned")
-            Case 2
-                MsgBox("Invalid Code", MsgBoxStyle.Critical, "Error")
-            Case Else
-                MsgBox("An Error has occurred, Please try again later", MsgBoxStyle.Exclamation, "Error")
-        End Select
-    End Sub
+        Return CheckLogin(Username, Password)
+    End Function
     Public Function GetMOTD() As String
         Try
             Using web As New WebClient
