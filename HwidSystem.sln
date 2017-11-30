@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "HwidSystem", "HwidSystem\HwidSystem.vbproj", "{BDA8384C-A4D3-4980-A142-6E23EEA7EB85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLogin", "TestLogin\TestLogin.csproj", "{C12B9442-E7D3-4361-832C-59A30A7844C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{BDA8384C-A4D3-4980-A142-6E23EEA7EB85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDA8384C-A4D3-4980-A142-6E23EEA7EB85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDA8384C-A4D3-4980-A142-6E23EEA7EB85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C12B9442-E7D3-4361-832C-59A30A7844C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C12B9442-E7D3-4361-832C-59A30A7844C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C12B9442-E7D3-4361-832C-59A30A7844C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C12B9442-E7D3-4361-832C-59A30A7844C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

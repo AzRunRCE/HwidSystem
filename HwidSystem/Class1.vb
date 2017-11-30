@@ -1,7 +1,7 @@
 ﻿Imports System.Net, System.IO, System.Management, System, System.Security.Cryptography, System.Text, System.Windows.Forms
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.Page
 
-Public Class Hwid
+Public Class HwidSystem
     Private PVerison As String = ""
     Private URL As String = ""
     Public Sub New(ByVal SystemURL As String, ByVal version As String)
@@ -10,15 +10,11 @@ Public Class Hwid
     End Sub
 
     Public Function CheckLogin(ByVal Username As String, ByVal Password As String) As Integer
-        Dim Answer1, Answer2, Answer3 As String
+        Dim Answer1 As String
         Username = Username.ToLower()
-        Password = GetMd5Hash(MD5.Create, Password)
-        Using md5Hash As MD5 = MD5.Create()
-            Dim Hwid As String = GetID()
-            Answer1 = GetMd5Hash(md5Hash, Hwid & " Not Banned " & Username & " " & Password & " 0")
-            Answer2 = GetMd5Hash(md5Hash, Hwid & " Banned " & Username & " " & Password & " 1")
-            Answer3 = GetMd5Hash(md5Hash, Hwid & " Not On System " & Username & " " & Password)
-        End Using
+        Password = getSHA1Hash(Password)
+        Dim Hwid As String = GetID()
+        Answer1 = getSHA1Hash(Hwid & " Not Banned " & Username & " " & Password & " 0")
         Dim GET_Data As String = URL & "/api.php?Action=Login&usr=" & Username & "&pas=" & Password & "&hwid=" & GetID()
         Try
             Dim WebReq As HttpWebRequest = HttpWebRequest.Create(GET_Data)
@@ -26,16 +22,11 @@ Public Class Hwid
             Using WebRes As HttpWebResponse = WebReq.GetResponse
                 Using Reader As New StreamReader(WebRes.GetResponseStream)
                     Dim Str As String = Reader.ReadLine
-                    Select Case True
-                        Case Str.Contains(Answer1)
-                            Return 0
-                        Case Str.Contains(Answer2)
-                            Return 1
-                        Case Str.Contains(Answer3)
-                            Return 2
-                        Case Else
-                            Return 3
-                    End Select
+                    If (Str.Contains(Answer1)) Then
+                        Return 1
+                    Else
+                        Return 0
+                    End If
                 End Using
             End Using
         Catch Ex As Exception
@@ -45,7 +36,7 @@ Public Class Hwid
     End Function
     Public Sub RegisterUser(ByVal Username As String, ByVal Password As String, ByVal Code As String)
         Username = Username.ToLower()
-        Dim WebReq As HttpWebRequest = HttpWebRequest.Create(URL & "/api.php?Action=Register&code=" & Code & "&usr=" & Username & "&pas=" & GetMd5Hash(MD5.Create, Password) & "&hwid=" & GetID())
+        Dim WebReq As HttpWebRequest = HttpWebRequest.Create(URL & "/api.php?Action=Register&code=" & Code & "&usr=" & Username & "&pas=" & getSHA1Hash(Password) & "&hwid=" & GetID())
         WebReq.Proxy = Nothing
         Using WebRes As WebResponse = WebReq.GetResponse
             Using Reader As New StreamReader(WebRes.GetResponseStream)
@@ -133,14 +124,21 @@ Public Class Hwid
             Return String.Empty
         End Try
     End Function
-    Public Function GetMd5Hash(ByVal md5Hash As MD5, ByVal input As String) As String
-        Dim data As Byte() = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input))
-        Dim sBuilder As New StringBuilder()
-        Dim i As Integer
-        For i = 0 To data.Length - 1
-            sBuilder.Append(data(i).ToString("x2"))
-        Next i
-        Return sBuilder.ToString()
+    Function getSHA1Hash(ByVal strToHash As String) As String
+
+        Dim sha1Obj As New Security.Cryptography.SHA1CryptoServiceProvider
+        Dim bytesToHash() As Byte = System.Text.Encoding.ASCII.GetBytes(strToHash)
+
+        bytesToHash = sha1Obj.ComputeHash(bytesToHash)
+
+        Dim strResult As String = ""
+
+        For Each b As Byte In bytesToHash
+            strResult += b.ToString("x2")
+        Next
+
+        Return strResult
+
     End Function
 
 
